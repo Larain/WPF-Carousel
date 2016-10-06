@@ -44,6 +44,7 @@ namespace Viamo
         private double _startHorizontalOffset;
         private double _startVerticalOffset;
         private InertiaManager _inertiaManager;
+        private TransformManager _transformManager;
 
         public WheelOrientation WheelOrientation { get; set; }
         public bool ScrollByContent { get; set; }
@@ -69,9 +70,12 @@ namespace Viamo
             _inertiaManager.GetMinSpeed += () => MinSpeed;
             _inertiaManager.Inertia += OnInertia;
 
+            _transformManager = new TransformManager();
+
             // Add events to scrollViewer
             AddHandler(MouseDownEvent, new MouseButtonEventHandler((s, e) => _inertiaManager.StopInertia()), true);
             AddHandler(MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheelEx), true);
+            AddHandler(ScrollChangedEvent, new ScrollChangedEventHandler((s, e) => _transformManager.ScaleContainerElements(this)));
         }
 
         private ScrollDirections OnGetScrollDirections()
@@ -94,8 +98,6 @@ namespace Viamo
 
             if (VerticalScrollBarVisibility != ScrollBarVisibility.Disabled)
                 ScrollToVerticalOffset(_startVerticalOffset - absoluteMove.Y);
-
-            TransformManager.ScaleElemntsInContainer(this);
         }
 
         private void OnScrollStopped(Vector absoluteMove, Vector relativeMove, bool isMove)

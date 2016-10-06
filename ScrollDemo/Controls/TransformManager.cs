@@ -10,96 +10,83 @@ using System.Windows.Media.Animation;
 
 namespace UappUI.AppCode.Touch
 {
-    public static class TransformManager
+    public class TransformManager
     {
-        public static void ScaleElemntsInContainer(ScrollViewer listView)
+        const double MIN_SCALE = 0.2;
+        const double MAX_SCALE = Math.PI - 0.2;
+
+        public void ScaleContainerElements(ScrollViewer listView)
         {
             if (!(listView.Content is StackPanel))
                 throw new NotImplementedException("Method does not support yet elements different of StackPanel inside ScrollViewer");
+
             StackPanel container = (StackPanel)listView.Content;
 
-            int[] visibleItems = GetVisibleItemsFlag(listView);
+            // To be sure we get the element with max height;
+            List<FrameworkElement> containerItems = new List<FrameworkElement>();
+            foreach (UIElement item in container.Children)
+                containerItems.Add((FrameworkElement)item);
 
-            double indexOfMiddleElement = visibleItems.Length / 2;
-            int midIndex;
-            if (IsInteger(indexOfMiddleElement))
-                midIndex = (int)indexOfMiddleElement - 1;
-            else
-                midIndex = (int)indexOfMiddleElement;
+            double currentMaxElementPosition = listView.ActualHeight;
+            double currentMinElementPosition = containerItems.OrderByDescending(i => i.ActualHeight).
+                FirstOrDefault().ActualHeight * (-1);
 
-            if (midIndex == 0)
-                throw new ArgumentException("Please add more items in array");
-            double h = 0.5 / midIndex;
-            double scaleCoef = 0.5;
-            int counter = 0;
+            // Getting visible items;
+            List<FrameworkElement> visibleItems = new List<FrameworkElement>();
+            for (int i = 0; i < container.Children.Count; i++)
+                if (IsVisible(container.Children[i], listView))
+                    visibleItems.Add((FrameworkElement)container.Children[i]);
 
-            foreach (int i in visibleItems)
+            // Scaling elements;
+            foreach (FrameworkElement item in visibleItems)
             {
-                ScaleElement(container.Children[i], scaleCoef, h);
-                if (counter < midIndex)
-                    scaleCoef += h;
-                else
-                    scaleCoef -= h;
-                counter++;
+                double mappedHeightValue = GetElementPosition(item, listView).Y.
+                    Map(currentMinElementPosition, currentMaxElementPosition, 
+                    MIN_SCALE, MAX_SCALE);
+
+                ScaleElement(item, Math.Sin(mappedHeightValue));
             }
         }
 
-        private static bool IsInteger(double number)
+        #region protected methods
+        protected Point GetElementPosition(FrameworkElement childElement, FrameworkElement absoluteElement)
         {
-            return (number % 1) == 0;
+            return childElement.TransformToAncestor(absoluteElement).Transform(new Point(0, 0));
         }
 
-        public static int[] GetVisibleItemsFlag(ScrollViewer itemContainer)
+        protected void ScaleElement(UIElement element, double scaleCoef)
         {
+            ScaleTransform scale = new ScaleTransform(scaleCoef, scaleCoef);
+            element.RenderTransformOrigin = new Point(0.5, 0.5);
+            element.RenderTransform = scale;
+        }
+
+        protected List<FrameworkElement> GetVisibleItems(ScrollViewer itemContainer)
+        {
+            // Refactor;
+            if (!(itemContainer.Content is StackPanel))
+                throw new NotImplementedException("The method need improvments.");
+
             StackPanel container = (StackPanel)itemContainer.Content;
-            List<int> visibleItemIndex = new List<int>();
+            List<FrameworkElement> visibleItemList = new List<FrameworkElement>();
 
-            for (int i = 0; i < container.Children.Count; i++)
-                if (IsVisible(container.Children[i], itemContainer))
-                    visibleItemIndex.Add(i);
-
-            return visibleItemIndex.ToArray();
+            return visibleItemList;
         }
+        #endregion
 
-        private static bool IsVisible(object child, FrameworkElement scrollViewer)
+        #region private methods
+        private bool IsVisible(object child, FrameworkElement scrollViewer)
         {
+            // Refactor;
             if (!(child is FrameworkElement))
-                throw new NotImplementedException("It's too hard :)");
-            FrameworkElement fchild = (FrameworkElement)child;
+                throw new NotImplementedException("The method need improvments.");
 
+            FrameworkElement fchild = (FrameworkElement)child;
             var childTransform = fchild.TransformToAncestor(scrollViewer);
             var childRectangle = childTransform.TransformBounds(new Rect(new Point(0, 0), fchild.RenderSize));
             var ownerRectangle = new Rect(new Point(0, 0), scrollViewer.RenderSize);
             return ownerRectangle.IntersectsWith(childRectangle);
         }
-
-        private static void ScaleElement(UIElement element, double scaleCoef, double h)
-        {
-            Storyboard storyboard = new Storyboard();
-
-            ScaleTransform scale = new ScaleTransform(scaleCoef, scaleCoef);
-            element.RenderTransformOrigin = new Point(0.5, 0.5);
-            element.RenderTransform = scale;
-
-            DoubleAnimation growAnimation = new DoubleAnimation();
-            growAnimation.Duration = TimeSpan.FromMilliseconds(150);
-            //growAnimation.From = scaleCoef + h;
-            //growAnimation.To = scaleCoef;
-
-            DoubleAnimation growAnimation2 = new DoubleAnimation();
-            growAnimation2.Duration = TimeSpan.FromMilliseconds(150);
-            //growAnimation2.From = scaleCoef + h;
-            //growAnimation2.To = scaleCoef;
-
-            storyboard.Children.Add(growAnimation);
-
-            Storyboard.SetTargetProperty(growAnimation, new PropertyPath("RenderTransform.ScaleX"));
-            Storyboard.SetTargetProperty(growAnimation2, new PropertyPath("RenderTransform.ScaleY"));
-            Storyboard.SetTarget(growAnimation, element);
-            Storyboard.SetTarget(growAnimation2, element);
-
-            storyboard.Begin();
-        }
-
+        #endregion
     }
 }
