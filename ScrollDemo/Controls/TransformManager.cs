@@ -22,12 +22,12 @@ namespace UappUI.AppCode.Touch
 
             StackPanel container = (StackPanel)listView.Content;
 
-            // To be sure we get the element with max height;
             List<FrameworkElement> containerItems = new List<FrameworkElement>();
             foreach (UIElement item in container.Children)
                 containerItems.Add((FrameworkElement)item);
 
             double currentMaxElementPosition = listView.ActualHeight;
+            // To be sure we get the element with max height;
             double currentMinElementPosition = containerItems.OrderByDescending(i => i.ActualHeight).
                 FirstOrDefault().ActualHeight * (-1);
 
