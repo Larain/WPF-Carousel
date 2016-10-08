@@ -68,7 +68,6 @@
     <Compile Include="Controls\ScrollTouchManager.cs" />
     <Compile Include="Controls\ScrollViewer.cs" />
     <Compile Include="Controls\TouchManager.cs" />
-    <Compile Include="Controls\TransformManager.cs" />
     <Compile Include="Controls\ValueMapHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

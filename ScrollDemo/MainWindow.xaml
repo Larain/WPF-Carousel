@@ -10,27 +10,33 @@
         Width="200"
         Height="500">
     <Grid>
-        <v:ScrollViewer HorizontalScrollBarVisibility="Disabled"
+        <v:ScrollViewer x:Name="scrollViewer"
+                        HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Hidden"
                         ScrollByContent="True"
                         IsInertia="True"
                         IsTabStop="False"
                         Focusable="False"
                         ScrollChanged="ScrollViewer_ScrollChanged">
-            <StackPanel>
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
-                <Image Source="Images/icon100.png" Width="100" />
+            <StackPanel x:Name="stackPanel">
+                <StackPanel.Resources>
+                    <Style TargetType="Image">
+                        <Setter Property="Margin" Value="10" />
+                    </Style>
+                </StackPanel.Resources>
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
+                <Image Source="Images/icon100.png" Height="100" />
             </StackPanel>
         </v:ScrollViewer>
     </Grid>
